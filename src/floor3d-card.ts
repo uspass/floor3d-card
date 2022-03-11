@@ -957,7 +957,7 @@ export class Floor3dCard extends LitElement {
       }
     }
 
-    if (this._config.sky == 'yes') {
+    if (this._config.sky && this._config.sky == 'yes') {
       this._ambient_light = new THREE.HemisphereLight(0xffffff, 0x000000, 0.2);
       this._ambient_light.groundColor.setHSL(0.095, 1, 0.75);
       this._ambient_light.intensity = intensity;
@@ -965,6 +965,7 @@ export class Floor3dCard extends LitElement {
       this._ambient_light = new THREE.AmbientLight(0xffffff, 0.2);
       this._ambient_light.intensity = intensity;
     }
+
 
     this._scene.add(this._ambient_light);
 
@@ -1000,12 +1001,14 @@ export class Floor3dCard extends LitElement {
     this._renderer.domElement.style.display = 'block';
 
     //this._renderer.physicallyCorrectLights = true;
-    this._renderer.outputEncoding = THREE.sRGBEncoding;
-    this._renderer.toneMapping = THREE.LinearToneMapping;
+    if (this._config.sky && this._config.sky == 'yes') {
+        this._renderer.outputEncoding = THREE.sRGBEncoding;
+    }
+    //this._renderer.toneMapping = THREE.LinearToneMapping;
+    this._renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this._renderer.toneMappingExposure = 0.6;
     this._renderer.localClippingEnabled = true;
     this._renderer.physicallyCorrectLights = false;
-
 
     if (this._config.path && this._config.path != '') {
       let path = this._config.path;
@@ -1116,16 +1119,14 @@ export class Floor3dCard extends LitElement {
       }
     }
 
-    if (this._config.shadow) {
-      if (this._config.shadow == 'yes') {
-        console.log('Shadow On');
-        this._renderer.shadowMap.enabled = true;
-        this._renderer.shadowMap.type = THREE.BasicShadowMap;
-        this._renderer.shadowMap.autoUpdate = false;
-      } else {
-        console.log('Shadow Off');
-        this._renderer.shadowMap.enabled = false;
-      }
+    if (this._config.shadow && this._config.shadow == 'yes') {
+      console.log('Shadow On');
+      this._renderer.shadowMap.enabled = true;
+      this._renderer.shadowMap.type = THREE.BasicShadowMap;
+      this._renderer.shadowMap.autoUpdate = false;
+    } else {
+      console.log('Shadow Off');
+      this._renderer.shadowMap.enabled = false;
     }
 
     this._add3dObjects();
@@ -1170,10 +1171,8 @@ export class Floor3dCard extends LitElement {
         this._controls.enabled = false;
       }
 
-      if (this._config.sky) {
-        if (this._config.sky == 'yes') {
+      if (this._config.sky && this._config.sky == 'yes') {
           this._initSky();
-        }
       }
 
       if (!this._config.sky || this._config.sky == 'no') {
